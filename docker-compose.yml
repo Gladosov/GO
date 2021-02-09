@@ -1,0 +1,44 @@
+version: '3.4'
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres:
+
+
+
+services:
+  postgres:
+    container_name: snippetboxdb
+    image: postgres
+    restart: always
+    
+
+    
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/data/postgres
+    
+    networks:
+      - postgres
+
+    environment: 
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: snippetbox
+      PGDATA: /data/postgres
+      CONFIGS: "listen_addresses:'*'"
+  snippetAPI:
+    container_name: snippetAPI
+    image: snippetbox
+    depends_on:
+      - postgres
+    build:
+      context: ""
+      dockerfile: ../../Dockerfile
+    ports:
+      - 4000:4000
+
